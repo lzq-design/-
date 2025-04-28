@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成就殿堂</title>
+    <link rel="stylesheet" href="../css/index_03_01_style.css">
+    <link rel="icon" href="../images/index_03_01.jpg">
+    <link rel="icon" href="../images/index_03.jpg">
+</head>
+<body>
+    <div class="menu">
+    <ul>
+        <li><a href="../vice/index_03.html">返回</a></li>
+     </ul>
+     </div>
+    <div class="shell">
+        <div class="carousel">
+            <ol class="boxs">
+                <li class="box">
+                    <img src="../images_ming/ming_1.jpg" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_2.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_3.jpg" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_4.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_5.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_6.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_7.webp" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_8.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_9.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_10.jpg" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_11.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_12.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_13.jfif" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_14.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_15.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_16.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_17.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_18.jfif" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_19.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_20.jpg" alt="">
+                </li>
+
+                <li class="box">
+                    <img src="../images_ming/ming_21.jpg" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_22.jpg" alt="">
+                </li>
+                <li class="box">
+                    <img src="../images_ming/ming_23.jpg" alt="">
+                </li>
+            </ol>
+        </div>
+        <div class="arrows">
+            <button class="up"><i>&#9650;</i></button>
+            <button class="next"><i>&#9660;</i></button>
+        </div>
+    </div>
+
+</body>
+
+<script>
+// 获取外层容器 
+const shell = document.querySelector('.boxs');
+// 获取所有子元素 
+const cells = shell.querySelectorAll('.box');
+// 获取容器宽度 
+const cellWidth = shell.offsetWidth;
+// 获取容器高度 
+const cellHeight = shell.offsetHeight;
+// 设置子元素大小为容器高度 
+const cellSize = cellHeight;
+// 子元素数量 
+const cellCount = 23;
+// 计算半径 
+const radius = Math.round((cellSize / 1.8) / Math.tan(Math.PI / cellCount));
+// 计算每个子元素的角度 
+const theta = 360 / cellCount;
+// 当前选中的子元素索引 
+let selectedIndex = 0;
+function rotateshell() {
+    // 计算旋转角度  
+    const angle = theta * selectedIndex * -1;
+    // 设置容器的旋转和平移效果 
+    shell.style.transform = 'translateZ(' + -radius + 'px) ' + 'rotateX(' + -angle + 'deg)';
+    // 计算当前选中的子元素索引 
+    const cellIndex = selectedIndex < 0 ? (cellCount - ((selectedIndex * -1) % cellCount)) : (selectedIndex % cellCount);
+    cells.forEach((cell, index) => {
+        if (cellIndex === index) {
+            // 添加选中样式 
+            cell.classList.add('selected');
+        } else {
+            // 移除选中样式 
+            cell.classList.remove('selected');
+        }
+    });
+}
+function selectPrev() {
+// 选中上一个子元素 
+selectedIndex--;
+// 旋转容器 
+rotateshell();
+}
+function selectNext() {
+// 选中下一个子元素 
+selectedIndex++;
+// 旋转容器 
+rotateshell();
+}
+// 获取上一个按钮 
+const prevButton = document.querySelector('.up');
+// 绑定点击事件 
+prevButton.addEventListener('click', selectPrev);
+// 获取下一个按钮 
+const nextButton = document.querySelector('.next');
+// 绑定点击事件 
+nextButton.addEventListener('click', selectNext);
+function initshell() {
+cells.forEach((cell,i) => {
+  // 计算每个子元素的角度 
+  const cellAngle = theta * i;
+  // 设置每个子元素的旋转和平移效果 
+  cell.style.transform = 'rotateX(' + -cellAngle + 'deg) translateZ(' + radius + 'px)';
+});
+// 初始化旋转容器 
+rotateshell();
+}
+// 调用初始化函数 
+initshell();
+    
+</script>
+
+</html>

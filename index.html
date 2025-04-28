@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>中华自然科学及其它优秀文化瑰宝</title>
+    <link href="css/index_style.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="./images/index.jpg">
+    <style>
+        @keyframes itemEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .case-item {
+            animation: itemEntrance 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .case-item:nth-child(1) { animation-delay: 0.2s; }
+        .case-item:nth-child(2) { animation-delay: 0.4s; }
+        .case-item:nth-child(3) { animation-delay: 0.6s; }
+        .case-item:nth-child(4) { animation-delay: 0.8s; }
+
+        /* 点击效果 */
+        .case-item:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* 动态边框效果 */
+        .case-item::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #f4e8e8, #545252);
+            z-index: -1;
+            animation: borderFlow 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .case-item:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes borderFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+  <div class="case-content-bg case-content-info">
+    <div class="case-box">
+        <h3 class="case-box-title">
+            <em>古韵科光：文明长河里的智慧涟漪</em>
+            <span></span>
+        </h3> 
+        <div class="case-wrapper clearfix">
+            <!-- 科脉交织 -->
+            <div class="case-item" onclick="demo()">
+                <div class="case-item-bg case-item-bg4"></div>
+                <div class="case-item-title">科脉交织</div>
+                <div class="case-item-text">
+                    古代自然科学与哲学共生共长，阴阳五行、天人合一等理念贯穿天文、医学等，在互促中编织出璀璨的智慧图景。
+                </div>
+                <div class="case-item-doc">
+                    <p>脉络流光</p>
+                </div>
+            </div>
+
+            <!-- 星河璀璨 -->
+            <div class="case-item" onclick="demo1()">
+                <div class="case-item-bg case-item-bg1"></div>
+                <div class="case-item-title">群星闪耀</div>
+                <div class="case-item-text">
+                    自然科学家如星子闪耀苍穹，张衡观天制仪，沈括格物著书，宋应星究术立典，以智慧丈量天地，于岁月长河镌刻不朽印记。
+                </div>
+                <div class="case-item-doc">
+                    <p>名人足迹</p>
+                </div>
+            </div>
+
+            <!-- 典册传承 -->
+            <div class="case-item" onclick="demo2()">
+                <div class="case-item-bg case-item-bg2"></div>
+                <div class="case-item-title">典册传承</div>
+                <div class="case-item-text">
+                    华夏文明长河中，司南指破迷雾，《九章》算尽方圆，黄道游仪窥破天机，千年智慧凝结成自然科学的瑰丽明珠。
+                </div>
+                <div class="case-item-doc">
+                    <p>典册流光</p>
+                </div>
+            </div>
+
+            <!-- 文明枢机 -->
+            <div class="case-item" onclick="demo3()">
+                <div class="case-item-bg case-item-bg3"></div>
+                <div class="case-item-title">四大发明</div>
+                <div class="case-item-text">
+                    纸页承载文明，活字拓印智慧，火药划破长夜，指南针指引星河。四大发明似璀璨灯塔，照亮人类文明的漫漫长路。
+                </div>
+                <div class="case-item-doc">
+                    <p>造纸术·指南针·火药·印刷术</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // 增强点击效果
+        function addClickEffect(event) {
+            const item = event.currentTarget;
+            const ripple = document.createElement('div');
+            
+            ripple.style.position = 'absolute';
+            ripple.style.width = '100px';
+            ripple.style.height = '100px';
+            ripple.style.background = 'rgba(255,255,255,0.4)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%,-50%) scale(0)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.left = `${event.offsetX}px`;
+            ripple.style.top = `${event.offsetY}px`;
+            
+            item.appendChild(ripple);
+            
+            requestAnimationFrame(() => {
+                ripple.style.transform = 'translate(-50%,-50%) scale(2)';
+                ripple.style.opacity = '0';
+            });
+
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // 为所有卡片添加点击效果
+        document.querySelectorAll('.case-item').forEach(item => {
+            item.addEventListener('click', addClickEffect);
+        });
+
+        // 原有跳转函数保持不变
+        function demo() { window.location = "./vice/index_01.html"; }
+        function demo1() { window.location = "./vice/index_02.html"; }
+        function demo2() { window.location = "./vice/index_03.html"; }
+        function demo3() { window.location = "./vice/index_04.html"; }
+
+        // 增加视差滚动效果
+        window.addEventListener('scroll', () => {
+            const items = document.querySelectorAll('.case-item');
+            const scrollY = window.scrollY;
+            
+            items.forEach((item, index) => {
+                const speed = (index + 1) * 0.1;
+                item.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

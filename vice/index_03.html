@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国古代医学成就交互系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="../images/index_03.jpg">
+    <style>
+        :root {
+    --primary: #2c5f2d;
+    --secondary: #97bc62;
+    --accent: #ffe194;
+    --bg: #f8f8f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    font-family: 'SimSun', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    }
+
+.main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--primary);
+    padding: 15px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.nav-list {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    list-style: none;
+}
+ a{text-decoration: none;}
+ li a{
+    color:rgb(240, 240, 240);
+}
+li a:hover{
+    color: #2c5f2d;
+}
+
+.nav-item {
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.nav-item.active {
+    background: var(--secondary);
+    transform: scale(1.1);
+    border-color: var(--accent);
+}
+
+.nav-item:hover {
+    background: var(--accent);
+    color: var(--primary);
+}
+
+.carousel-3d {
+            position: relative;
+            height: 100vh;
+            perspective: 2000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+.carousel-container {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 1000px;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        /* 修改后的卡片样式 */
+        .carousel-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 60px;
+            display: grid;
+            grid-template:
+                "title chart" 100px
+                "content chart" 1fr
+                "author chart" 100px / 1fr 300px;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.6;
+            transform: scale(0.8);
+        }
+
+/* 关键修复CSS */
+.carousel-3d {
+    margin-top: 70px;
+    height: calc(100vh - 70px);
+    perspective: 2500px;  /* 增大透视值 */
+    overflow: hidden;     /* 添加容器溢出隐藏 */
+}
+
+.carousel-container {
+    position: relative;
+    transform-style: preserve-3d;
+    width: 1000px;
+    height: 600px;
+    margin: 0 auto;
+    /* 移除overflow:hidden，改为父容器控制 */
+}
+
+.carousel-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* 修复背面可见问题 */
+    transform-origin: center center -500px; /* 设置3D变换原点 */
+    transition: transform 1s, opacity 0.5s;
+}
+
+        .item-title {
+            grid-area: title;
+            font-size: 2em;
+            color: var(--primary);
+            border-bottom: 3px solid var(--secondary);
+        }
+
+        .item-content {
+            grid-area: content;
+            padding: 20px 0;
+            line-height: 1.8;
+            height: 200px;
+        }
+
+        .item-author {
+            grid-area: author;
+            background: var(--accent);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .item-chart {
+            grid-area: chart;
+            position: relative;
+        }
+
+        /* 导航按钮 */
+        .nav-container {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-button {
+            width: 120px;
+            height: 50px;
+            background: var(--secondary);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-button::after {
+            content: attr(data-title);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            padding: 8px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        h4{
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .nav-button:hover::after {
+            opacity: 1;
+            bottom: 70px;
+        }
+
+        /* 时间线 */
+        .timeline {
+            position: fixed;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 400px;
+            width: 4px;
+            background: var(--secondary);
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -8px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .timeline-marker.active {
+            transform: scale(1.5);
+            box-shadow: 0 0 10px var(--primary);
+        }
+        
+
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <ul class="nav-list" id="mainNav">
+           <a href="../index.html"> <li class="nav-item">返回</li></a>
+            <li class="nav-item active" data-field="医学">医学</li>
+            <li class="nav-item" data-field="数学">数学</li>
+            <li class="nav-item" data-field="天文学">天文学</li>
+            <li class="nav-item" data-field="农学">农学</li>
+            <li class="nav-item" data-field="地理学">地理学</li>
+            <li class="nav-item" data-field="工程技术">工程技术</li>
+            <a href="../vice/index_03_01.html"><li class="nav-item">图览</li></a>
+        </ul>
+    </nav>
+    <div class="carousel-3d">
+        <div class="carousel-container" id="carousel">
+            <!-- 卡片由JavaScript动态生成 -->
+        </div>
+        <div class="timeline" id="timeline"></div>
+        <div class="nav-container" id="nav"></div>
+    </div>
+
+<script>
+    const ALL_DATA = {
+    医学: [{
+    title: "黄帝内经",
+        year: -200, // 约战国时期
+        content: "构建天人相应整体观，《素问》详述养生法则，《灵枢》首创经络针刺技术，提出五运六气预测模型。唐代王冰注本完善运气学说，奠定后世金元四大家理论根基，治未病思想影响现代预防医学。",
+        impact: [
+            "建立中医理论体系",
+            "影响后世所有医家",
+            "至今仍是中医必修经典"
+        ],
+        author: {
+            name: "集体创作",
+            period: "战国至秦汉",
+            bio: "托名黄帝，汇集古代医家智慧结晶"
+        },
+        chartData: {
+            labels: ["理论体系", "诊断方法", "养生学说", "后世影响"],
+            data: [9, 8, 8, 10]
+        },
+        image: "huangdi.jpg"
+    },
+    
+    {
+        title: "伤寒杂病论",
+        year: 220, // 东汉末年
+        content: "创立理-法-方-药诊疗范式，113首经方奠定临床治疗学基础。六经辨证体系衍生出卫气营血辨证，现代研究证实白虎汤具抗炎免疫调节作用，林亿校订本分为《伤寒论》与《金匮要略》。",
+        impact: [
+            "确立辨证论治原则",
+            "影响后世温病学说发展",
+            "被尊为'方书之祖'"
+        ],
+        author: {
+            name: "张仲景",
+            period: "东汉末年",
+            bio: "医圣，曾任长沙太守，晚年潜心医学"
+        },
+        chartData: {
+            labels: ["辨证体系", "方剂数量", "临床价值", "现代应用"],
+            data: [9, 9, 9, 8]
+        },
+        image: "shanghan.jpg"
+    },
+    {
+        title: "本草纲目",
+        year: 1593,
+        content: "采用自然分类法革新药物学，新增374种药材如三七，1160幅精细药图开创科学绘图先河。提出'脑为元神之府'突破传统脏腑论，达尔文《物种起源》引用其生物变异记载。",
+        impact: [
+            "中国古代药物学集大成之作",
+            "影响世界药学发展",
+            "被译成多国文字"
+        ],
+        author: {
+            name: "李时珍",
+            period: "明代",
+            bio: "曾任楚王府奉祠正，毕生致力于医药研究"
+        },
+        chartData: {
+            labels: ["药物收录", "分类体系", "国际影响", "现代参考"],
+            data: [10, 9, 9, 8]
+        },
+        image: "bencao.jpg"
+    },
+    {
+        title: "千金方",
+        year: 652,
+        content: "首创妇科儿科分科体系，记载羊肝治夜盲症（维生素A缺乏）等营养疗法。提出'大医精诚'医德规范，苇茎汤等方剂至今用于肺脓疡治疗，食疗篇载谷白皮粥防治脚气病。",
+        impact: [
+            "确立中医医德规范",
+            "保存大量唐代以前医方",
+            "首创妇科、儿科分科"
+        ],
+        author: {
+            name: "孙思邈",
+            period: "唐代",
+            bio: "药王，隐居太白山研究医药，享年141岁"
+        },
+        chartData: {
+            labels: ["医德理论", "方剂数量", "分科体系", "养生学说"],
+            data: [9, 9, 8, 8]
+        },
+        image: "qianjin.jpg"
+    },
+    {
+        title: "难经",
+        year: -200,
+        content: "确立寸口三部九候诊脉标准，阐释奇经八脉理论完善经络系统。提出肾间动气学说解释生命原动力，记载七冲门消化道解剖概念，元代滑寿据此发展特定穴体系。",
+        impact: [
+            "补充发展黄帝内经理论",
+            "确立脉诊标准",
+            "影响后世诊断学发展"
+        ],
+        author: {
+            name: "秦越人（扁鹊）",
+            period: "战国时期",
+            bio: "开创脉诊，精通各科，被尊为神医"
+        },
+        chartData: {
+            labels: ["理论创新", "诊断技术", "针灸理论", "后世影响"],
+            data: [8, 9, 7, 8]
+        },
+        image: "nanjing.jpg"
+    },
+    {
+        title: "神农本草经",
+        year: -200,
+        content: "创立四气五味、七情和合理论体系，记载麻黄平喘（麻黄碱）、黄连治痢（小檗碱）等科学验证的用药经验。上品120种药物启发现代抗衰老研究，武威汉简证实其成书前实践基础。",
+        impact: [
+            "奠定中药学基础",
+            "首创药物分类体系",
+            "影响后世本草著作"
+        ],
+        author: {
+            name: "集体创作",
+            period: "秦汉时期",
+            bio: "托名神农，实际为历代医家经验总结"
+        },
+        chartData: {
+            labels: ["药物数量", "分类体系", "理论体系", "现代价值"],
+            data: [7, 8, 7, 7]
+        },
+        image: "shennong.jpg"
+    },
+    {
+        title: "针灸甲乙经",
+        year: 282,
+        content: "系统规范349穴位定位与同身寸测量法，记载热病五十九刺等治疗方案。传入朝鲜成为《东医宝鉴》蓝本，1956年法译本推动欧洲针灸传播，现代穴位研究仍以其为标准。",
+        impact: [
+            "首部针灸学专著",
+            "确立穴位定位标准",
+            "影响国际针灸发展"
+        ],
+        author: {
+            name: "皇甫谧",
+            period: "西晋",
+            bio: "从文士转攻医学，著有《帝王世纪》等"
+        },
+        chartData: {
+            labels: ["穴位标准", "治疗技术", "理论体系", "国际影响"],
+            data: [9, 8, 8, 9]
+        },
+        image: "zhenjiu.jpg"
+    },
+    {
+        title: "温病条辨",
+        year: 1798,
+        content: "融合叶天士卫气营血理论，创立三焦辨证体系区分伤寒与温病传变。创制安宫牛黄丸等急救方剂，2003年非典期间指导中西医结合治疗方案，银翘散成为现代流感基础方。",
+        impact: [
+            "完善温病学说",
+            "创立三焦辨证",
+            "影响近代传染病防治"
+        ],
+        author: {
+            name: "吴鞠通",
+            period: "清代",
+            bio: "温病四大家之一，亲历疫病后专研温病"
+        },
+        chartData: {
+            labels: ["辨证体系", "方剂创新", "现代应用", "国际影响"],
+            data: [9, 8, 8, 7]
+        },
+        image: "wenbing.jpg"
+    },
+    {
+        title: "外台秘要",
+        year: 752,
+        content: "保存60余部佚失医籍如《范汪方》，记载羊靥治瘿病（甲状腺疗法）早西方千年。日本《医心方》引用其内容达2000余条，敦煌残卷验证的古方已开发成现代中药制剂。",
+        impact: [
+            "保存已佚医书内容",
+            "反映唐代医学成就",
+            "影响日本汉方医学"
+        ],
+        author: {
+            name: "王焘",
+            period: "唐代",
+            bio: "出身官宦世家，长期主管弘文馆医书"
+        },
+        chartData: {
+            labels: ["文献保存", "方剂数量", "历史价值", "国际影响"],
+            data: [9, 9, 9, 8]
+        },
+        image: "waitai.jpg"
+    }
+    ],
+    
+    数学: [
+    {
+        title: "九章算术",
+        year: -50, // 约公元前1世纪
+        content: "首创'方程术'解线性方程组，提出'正负术'定义负数运算法则。'盈不足术'开创双假设法逼近解，'勾股术'系统化直角三角形理论，隋唐时期传入朝鲜日本成为算学教材范本。",
+        impact: [
+            "最早提出负数概念",
+            "首创联立方程组解法",
+            "奠定中国数学体系基础"
+        ],
+        author: {
+            name: "张苍等",
+            period: "汉代",
+            bio: "西汉数学家，在先秦数学基础上整理编纂"
+        },
+        chartData: {
+            labels: ["代数", "几何", "应用", "影响"],
+            data: [9, 8, 9, 10]
+        },
+        image: "math-jiuzhang.jpg"
+    },
+    {
+        title: "周髀算经",
+        year: -100,
+        content: "运用勾股定理测算'日高术'，建立'七衡六间'天文测算模型。记载24节气晷影数据，首创'盖天说'量化宇宙观，唐代传入印度影响《历算书》编撰。",
+        impact: [
+            "勾股定理最早文字记录",
+            "建立盖天说宇宙模型",
+            "奠定天文数学基础"
+        ],
+        author: {
+            name: "佚名",
+            period: "战国时期",
+            bio: "多代学者集体智慧结晶"
+        },
+        chartData: {
+            labels: ["定理", "天文", "测量", "影响"],
+            data: [9, 8, 7, 8]
+        },
+        image: "math-zhoubi.jpg"
+    },
+    {
+        title: "海岛算经",
+        year: 263,
+        content: "发展'重表法'实现无接触测量，通过两次测望解算海岛高度。'累矩法'解决复杂地形体积计算，其测量原理被元代郭守敬改进用于天文仪器制造。",
+        impact: [
+            "测量学重大突破",
+            "首创重差测量法",
+            "工程测量奠基之作"
+        ],
+        author: {
+            name: "刘徽",
+            period: "三国时期",
+            bio: "魏晋数学家，注释九章算术第一人"
+        },
+        chartData: {
+            labels: ["测量", "几何", "应用", "创新"],
+            data: [10, 9, 9, 9]
+        },
+        image: "math-haidao.jpg"
+    },
+    {
+        title: "缀术",
+        year: 480,
+        content: "运用'缀术'逼近法将圆周率精确至3.1415926/7，领先世界千年。推导'牟合方盖'球体积公式，首创'开差幂'三次方程解法，北宋被列为算学馆必修教材。",
+        impact: [
+            "圆周率精确计算记录保持千年",
+            "球体积公式推导",
+            "数学方法创新典范"
+        ],
+        author: {
+            name: "祖冲之",
+            period: "南北朝",
+            bio: "杰出数学家、天文学家，精算圆周率"
+        },
+        chartData: {
+            labels: ["算法", "几何", "精度", "影响"],
+            data: [10, 9, 10, 9]
+        },
+        image: "math-zhuishu.jpg"
+    },
+    {
+        title: "缉古算经",
+        year: 626,
+        content: "首创'带从开立方'解三次方程，解决堤坝工程'仰观台'建造难题。发展'双设法'数值逼近技术，其算法原理为宋元时期'天元术'奠定基础。",
+        impact: [
+            "三次方程解法突破",
+            "工程数学应用典范",
+            "开宋元数学先河"
+        ],
+        author: {
+            name: "王孝通",
+            period: "唐代",
+            bio: "工程数学家，曾任算学博士"
+        },
+        chartData: {
+            labels: ["方程", "应用", "创新", "影响"],
+            data: [9, 8, 9, 7]
+        },
+        image: "math-jigu.jpg"
+    },
+    {
+        title: "数书九章",
+        year: 1247,
+        content: "'大衍求一术'系统解决同余方程组，比高斯早554年。'正负开方术'解十次方程，记载最早完整雨量测量体系，1842年传入英国引发学界震动。",
+        impact: [
+            "创立中国剩余定理",
+            "高次方程数值解法",
+            "系统总结宋元数学"
+        ],
+        author: {
+            name: "秦九韶",
+            period: "南宋",
+            bio: "杰出数学家，曾任琼州知府"
+        },
+        chartData: {
+            labels: ["算法", "方程", "系统", "影响"],
+            data: [10, 9, 8, 9]
+        },
+        image: "math-shushu.jpg"
+    },
+    {
+        title: "测圆海镜",
+        year: 1248,
+        content: "创立'天元术'符号代数体系，用'元'字表示未知数。系统研究勾股容圆问题，推导出692条几何命题，为朱世杰四元术提供理论基础。",
+        impact: [
+            "天元术代数体系奠基",
+            "符号代数重要突破",
+            "影响元代数学发展"
+        ],
+        author: {
+            name: "李冶",
+            period: "金元时期",
+            bio: "数学家，金亡后隐居封龙山"
+        },
+        chartData: {
+            labels: ["代数", "符号", "体系", "创新"],
+            data: [9, 10, 8, 9]
+        },
+        image: "math-ceyuan.jpg"
+    },
+    {
+        title: "四元玉鉴",
+        year: 1303,
+        content: "创立'四元术'解四元高次方程组，发展'消元法'理论体系。记载'垛积术'研究高阶等差级数，其成果被清代数学家视为'中算绝诣'。",
+        impact: [
+            "多元高次方程解法",
+            "中国筹算体系巅峰",
+            "中世纪数学最高成就"
+        ],
+        author: {
+            name: "朱世杰",
+            period: "元代",
+            bio: "宋元数学集大成者，周游讲学"
+        },
+        chartData: {
+            labels: ["方程", "系统", "理论", "影响"],
+            data: [10, 9, 9, 8]
+        },
+        image: "math-siyuan.jpg"
+    },
+    {
+        title: "算法统宗",
+        year: 1592,
+        content: "系统化珠算'归除歌诀'，首创丈量步车等计算工具。'丈量田亩'算法推动土地清丈，1600年传入日本催生'和算'流派形成。",
+        impact: [
+            "珠算算法集大成",
+            "商业数学实用典范",
+            "影响东亚计算技术"
+        ],
+        author: {
+            name: "程大位",
+            period: "明代",
+            bio: "商人数学家，专注实用算法"
+        },
+        chartData: {
+            labels: ["算法", "应用", "普及", "影响"],
+            data: [8, 9, 10, 9]
+        },
+        image: "math-suanfa.jpg"
+    },
+    {
+        title: "割圆密率捷法",
+        year: 1774,
+        content: "运用'割圆连比例法'推导出正弦正矢9个幂级数，独立发现泰勒展开式。其'方圆互通'思想预示解析几何萌芽，被钱宝琮誉为'清代最杰出数学成果'。",
+        impact: [
+            "无穷级数研究突破",
+            "中西数学融合典范",
+            "微积分前驱成果"
+        ],
+        author: {
+            name: "明安图",
+            period: "清代",
+            bio: "蒙古族数学家，钦天监监正"
+        },
+        chartData: {
+            labels: ["分析", "创新", "融合", "影响"],
+            data: [9, 8, 9, 7]
+        },
+        image: "math-geyuan.jpg"
+    }
+],
+
+
+天文学: [
+    {
+        title: "甘石星经",
+        year: -300,
+        content: "精确测定121颗恒星赤道坐标，划分28宿星官体系。记载木卫三（甘德）与土卫三（石申）观测记录，早伽利略两千年，其星表数据被《史记·天官书》完整继承。",
+        impact: [
+            "世界最早星表",
+            "奠定天文观测基础",
+            "影响后世星官体系"
+        ],
+        author: {
+            name: "甘德、石申",
+            period: "战国时期",
+            bio: "齐楚两国天文学家，合称'甘石'"
+        },
+        chartData: {
+            labels: ["观测", "记录", "体系", "影响"],
+            data: [9, 10, 8, 9]
+        },
+        image: "astro-ganshi.jpg"
+    },
+    {
+        title: "浑天仪",
+        year: 117,
+        content: "铜铸浑象精准演示黄赤交角，漏水驱动每昼夜自转一周。齿轮系统含四层同心圆环，可模拟月行九道，其机械结构启发宋代苏颂水运仪象台设计。",
+        impact: [
+            "首台水力天文仪",
+            "建立浑天说模型",
+            "天文仪器制造典范"
+        ],
+        author: {
+            name: "张衡",
+            period: "东汉",
+            bio: "文理全才，曾任太史令"
+        },
+        chartData: {
+            labels: ["仪器", "理论", "创新", "工艺"],
+            data: [10, 9, 9, 8]
+        },
+        image: "astro-hunyi.jpg"
+    },
+    {
+        title: "大明历",
+        year: 510,
+        content: "首次引入岁差（每45.3年差1°），测得回归年365.2428日（现测值365.2422）。精确计算交食周期，其历法体系被隋唐沿用至《皇极历》出现。",
+        impact: [
+            "首虑岁差历法",
+            "回归年精度达现代值",
+            "历法改革里程碑"
+        ],
+        author: {
+            name: "祖冲之",
+            period: "南北朝",
+            bio: "数学家兼天文学家，精算圆周率"
+        },
+        chartData: {
+            labels: ["精度", "创新", "理论", "影响"],
+            data: [10, 9, 8, 9]
+        },
+        image: "astro-daming.jpg"
+    },
+    {
+        title: "黄道游仪",
+        year: 724,
+        content: "通过12处观测点测得子午线1度长129.22公里（现测111.2公里），首创复矩仪测定北极出地高度。其测量数据为《大衍历》编制提供基准参数。",
+        impact: [
+            "实测子午线长度",
+            "改进赤道坐标系",
+            "天文实测新高度"
+        ],
+        author: {
+            name: "僧一行",
+            period: "唐代",
+            bio: "佛学家兼天文学家，主持全国测量"
+        },
+        chartData: {
+            labels: ["测量", "仪器", "数据", "创新"],
+            data: [9, 9, 8, 9]
+        },
+        image: "astro-huangdao.jpg"
+    },
+    {
+        title: "授时历",
+        year: 1281,
+        content: "运用三次差内插法推算日月运动，回归年误差仅26秒。建立黄赤坐标转换公式，其算法体系传入朝鲜直接影响《七政算内篇》编纂。",
+        impact: [
+            "古代最精确历法",
+            "沿用长达400年",
+            "集天文观测大成"
+        ],
+        author: {
+            name: "郭守敬",
+            period: "元代",
+            bio: "天文仪器革新者，创制简仪等高仪"
+        },
+        chartData: {
+            labels: ["精度", "算法", "影响", "仪器"],
+            data: [10, 9, 10, 9]
+        },
+        image: "astro-shoushi.jpg"
+    },
+    {
+        title: "简仪",
+        year: 1276,
+        content: "独立赤道环装置可精确测量天体赤经赤纬，减少浑仪三重环遮挡。丹麦天文学家第谷1598年设计同类装置，但其轴承精度不及简仪铜制枢轴。",
+        impact: [
+            "简化观测流程",
+            "影响欧洲天文仪器",
+            "赤道装置先驱"
+        ],
+        author: {
+            name: "郭守敬",
+            period: "元代",
+            bio: "革新天文仪器体系"
+        },
+        chartData: {
+            labels: ["设计", "精度", "创新", "影响"],
+            data: [10, 9, 10, 9]
+        },
+        image: "astro-jianyi.jpg"
+    },
+    {
+        title: "回回历法",
+        year: 1382,
+        content: "引进阿拉伯《伊利汗历表》，运用球面三角法计算月离。保留中国传统24节气，其日月食推算精度较《授时历》提高30%。",
+        impact: [
+            "中外历法融合",
+            "引进球面三角学",
+            "完善传统历法体系"
+        ],
+        author: {
+            name: "马沙亦黑",
+            period: "明代",
+            bio: "回族天文学家，翻译伊斯兰历法"
+        },
+        chartData: {
+            labels: ["融合", "算法", "体系", "交流"],
+            data: [9, 8, 8, 9]
+        },
+        image: "astro-huihui.jpg"
+    },
+    {
+        title: "崇祯历书",
+        year: 1634,
+        content: "首引第谷宇宙体系与开普勒椭圆定律，计算采用360°圆周分度。编译《恒星历指》含32幅西洋星图，但为避争议仍将地球置于宇宙中心。",
+        impact: [
+            "系统引进欧洲天文学",
+            "启用望远镜观测",
+            "历法改革承前启后"
+        ],
+        author: {
+            name: "徐光启",
+            period: "明代",
+            bio: "科学家兼政治家，引进西学先驱"
+        },
+        chartData: {
+            labels: ["交流", "理论", "技术", "影响"],
+            data: [9, 9, 8, 8]
+        },
+        image: "astro-chongzhen.jpg"
+    },
+    {
+        title: "仪象考成",
+        year: 1752,
+        content: "运用牛顿月球运动理论改进交食预测，重测三垣二十八宿1830颗恒星。其星表精度达1角分，成为清代编纂《历象考成后编》基础数据。",
+        impact: [
+            "融合西方新理论",
+            "精确计算交食",
+            "传统历法最后高峰"
+        ],
+        author: {
+            name: "戴进贤",
+            period: "清代",
+            bio: "德国传教士，钦天监监正"
+        },
+        chartData: {
+            labels: ["融合", "计算", "体系", "创新"],
+            data: [8, 9, 7, 8]
+        },
+        image: "astro-yixiang.jpg"
+    },
+    {
+        title: "全天星图",
+        year: 940,
+        content: "彩绘星图用墨线连接257个星官，采用圆柱投影法保持赤道区域形变最小。较欧洲现存最早星图（1475年）早535年，现存大英博物馆S.3326号卷。",
+        impact: [
+            "世界最早星图实物",
+            "科学绘制星座图形",
+            "研究古代星象重要依据"
+        ],
+        author: {
+            name: "佚名",
+            period: "五代十国",
+            bio: "敦煌地区天文官"
+        },
+        chartData: {
+            labels: ["观测", "艺术", "记录", "价值"],
+            data: [9, 8, 10, 9]
+        },
+        image: "astro-dunhuang.jpg"
+    }
+],
+
+
+农学: [
+    {
+        title: "吕氏春秋·上农",
+        year: -239,
+        content: "'区田法'亩产达10石（约600公斤），'溲种法'用粪汁处理种子防虫抗旱。记载穗选法育种技术，较罗马农学家加图《农业志》早150年系统记录农业技术。",
+        impact: [
+            "确立重农政策理论",
+            "构建农业哲学体系",
+            "影响后世农本思想"
+        ],
+        author: {
+            name: "吕不韦门客",
+            period: "战国末期",
+            bio: "集体编纂，反映秦国农政思想"
+        },
+        chartData: {
+            labels: ["理论", "政策", "生态", "影响"],
+            data: [9, 8, 7, 8]
+        },
+        image: "agri-lvshi.jpg"
+    },
+    {
+        title: "氾胜之书",
+        year: 20,
+        content: "系统记载86种作物栽培与18种酿造技术，首创'绿肥轮作制'。详述微生物制曲'五色衣'观察法，其果树嫁接技术经朝鲜传入日本，奠定东亚旱作农业范式。",
+        impact: [
+            "系统农艺技术手册",
+            "首创区田集约栽培",
+            "保墒技术先驱"
+        ],
+        author: {
+            name: "氾胜之",
+            period: "西汉",
+            bio: "农学家，曾任劝农使者"
+        },
+        chartData: {
+            labels: ["技术", "方法", "理论", "创新"],
+            data: [9, 9, 7, 8]
+        },
+        image: "agri-fansheng.jpg"
+    },
+    {
+        title: "齐民要术",
+        year: 544,
+        content: "系统记载86种作物栽培与18种酿造技术，首创'绿肥轮作制'。详述微生物制曲'五色衣'观察法，其果树嫁接技术经朝鲜传入日本，奠定东亚旱作农业范式。",
+        impact: [
+            "现存最早完整农书",
+            "确立北方旱作体系",
+            "影响东亚农学千年"
+        ],
+        author: {
+            name: "贾思勰",
+            period: "北魏",
+            bio: "太守任上考察农业，退隐著书"
+        },
+        chartData: {
+            labels: ["体系", "技术", "影响", "保存"],
+            data: [10, 9, 9, 10]
+        },
+        image: "agri-qimin.jpg"
+    },
+    {
+        title: "耒耜经",
+        year: 880,
+        content: "完整记录江东曲辕犁11部件结构，犁评装置可调节深耕至15厘米。对比欧洲13世纪才出现可调犁床，其耕作效率提升50%，推动江南水田精耕细作。",
+        impact: [
+            "首部农具专著",
+            "保存曲辕犁数据",
+            "推动农具标准化"
+        ],
+        author: {
+            name: "陆龟蒙",
+            period: "唐代",
+            bio: "诗人农学家，隐居研究农具"
+        },
+        chartData: {
+            labels: ["农具", "工艺", "记录", "创新"],
+            data: [9, 8, 9, 7]
+        },
+        image: "agri-leisi.jpg"
+    },
+    {
+        title: "陈旉农书",
+        year: 1149,
+        content: "创立'土壤肥力论'，提出'用粪如用药'施肥原则。记载烤田法调控水稻根系发育，'桑基圩田'生态模式领先欧洲低地国家农业系统400年。",
+        impact: [
+            "确立南方农作体系",
+            "提出地力常新论",
+            "生态农业先驱"
+        ],
+        author: {
+            name: "陈旉",
+            period: "南宋",
+            bio: "隐士农学家，躬耕著书"
+        },
+        chartData: {
+            labels: ["理论", "生态", "水稻", "创新"],
+            data: [9, 8, 9, 8]
+        },
+        image: "agri-chenfu.jpg"
+    },
+    {
+        title: "王祯农书",
+        year: 1313,
+        content: "绘制306幅农器图谱，记载32种水力机械包括水转大纺车。'授时指掌活法图'将24节气与物候结合，1717年传入法国影响重农学派理论发展。",
+        impact: [
+            "农具图谱标准化",
+            "水力机械系统记载",
+            "农业百科全书典范"
+        ],
+        author: {
+            name: "王祯",
+            period: "元代",
+            bio: "县令任上推广农技，创制木活字"
+        },
+        chartData: {
+            labels: ["农具", "体系", "创新", "影响"],
+            data: [10, 9, 8, 9]
+        },
+        image: "agri-wangzhen.jpg"
+    },
+    {
+        title: "救荒本草",
+        year: 1406,
+        content: "科学分类414种植物，每种配木刻图谱并标注可食部位。记载蜡梅等43种新发现物种，其'亲尝验证'研究方法启发布鲁门特《植物图志》编纂。",
+        impact: [
+            "植物食用研究突破",
+            "救荒农学开创之作",
+            "影响李时珍本草纲目"
+        ],
+        author: {
+            name: "朱橚",
+            period: "明代",
+            bio: "明太祖第五子，封周王"
+        },
+        chartData: {
+            labels: ["植物", "应用", "创新", "民生"],
+            data: [9, 9, 8, 8]
+        },
+        image: "agri-jiuhuang.jpg"
+    },
+    {
+        title: "农政全书",
+        year: 1639,
+        content: "引入《泰西水法》设计龙尾车灌溉，系统总结甘薯'剪茎扦插'移植技术。'荒政篇'收录救荒食谱182种，其'风土论'科学解释作物引种规律。",
+        impact: [
+            "引进西方灌溉技术",
+            "系统农业政策论述",
+            "传统农学最高峰"
+        ],
+        author: {
+            name: "徐光启",
+            period: "明代",
+            bio: "科学家，官至礼部尚书"
+        },
+        chartData: {
+            labels: ["政策", "技术", "体系", "影响"],
+            data: [9, 9, 10, 9]
+        },
+        image: "agri-nongzheng.jpg"
+    },
+    {
+        title: "知本提纲·农则",
+        year: 1747,
+        content: "构建'天时-地脉-物性-人事'四维农学体系，推广'蒸粪法'改良土壤。记载关中'二粮一肥'轮作制，其生态循环理念较德国农学家泰伊尔早80年。",
+        impact: [
+            "哲学化农学体系",
+            "关中农业技术集成",
+            "生态循环农业典范"
+        ],
+        author: {
+            name: "杨屾",
+            period: "清代",
+            bio: "教育家，创办书院研究农桑"
+        },
+        chartData: {
+            labels: ["理论", "生态", "教育", "创新"],
+            data: [8, 9, 8, 7]
+        },
+        image: "agri-zhiben.jpg"
+    },
+    {
+        title: "授时通考",
+        year: 1742,
+        content: "汇编3500种古籍农政文献，'土宜篇'系统分析全国土壤特性。记载'御稻米'等24种优质品种，其农业灾害应对体系仍具现代防灾借鉴价值。",
+        impact: [
+            "最后传统农书经典",
+            "皇家农业政策总汇",
+            "保存大量古籍内容"
+        ],
+        author: {
+            name: "鄂尔泰等",
+            period: "清代",
+            bio: "乾隆敕命编纂，集体创作"
+        },
+        chartData: {
+            labels: ["政策", "文献", "体系", "保存"],
+            data: [8, 9, 7, 9]
+        },
+        image: "agri-shoushi.jpg"
+    }
+],
+
+
+地理学: [
+  {
+    title: "禹贡",
+    year: -500,
+    content: "系统划分冀、兖、青等九州地理单元，详载各州土壤等级（如雍州黄壤、徐州赤埴坟）、贡赋等级与物产分布。确立'五服'政治地理概念（甸服-侯服-绥服-要服-荒服），其'随山浚川'治水思想成为后世水利工程理论基础，日本《延喜式》征税体系明显受其影响。",
+    impact: ["中国地理区划雏形","最早系统地理记述","影响后世地理观念"],
+    author: {name: "集体创作", period: "春秋战国", bio: "托名大禹，实际为多代学者积累"},
+    chartData: {labels: ["区划","物产","体系","影响"], data: [8,7,9,9]},
+    image: "geo-yugong.jpg"
+  },
+  {
+    title: "制图六体",
+    year: 267,
+    content: "提出分率（比例尺）、准望（方位）、道里（距离）、高下（地势）、方邪（角度）、迂直（曲直）六大制图原则，运用'计里画方'法绘制《禹贡地域图》十八篇。其'地图投影'思维比托勒密《地理学指南》早300年，宋代沈括据此发展出分层色法地形表示技术。",
+    impact: ["世界最早制图理论","奠定中国地图学基础","影响直至清代"],
+    author: {name: "裴秀", period: "西晋", bio: "地图学家，官至司空"},
+    chartData: {labels: ["理论","精度","体系","创新"], data: [10,8,9,9]},
+    image: "geo-liuti.jpg"
+  },
+  {
+    title: "水经注",
+    year: 515,
+    content: "考證137条河流源流，增补1125条支流水系，标注峡谷358处、湖泊560个。记载古城池290座，石窟寺廟104座，开'因水证地'研究先河。其中对三峡'两岸连山，略无阙处'的描述成为传世名句，19世纪法国汉学家沙畹称其为'地理学界的荷马史诗'。",
+    impact: ["历史地理学奠基作","开创水文地理研究","保存大量古迹资料"],
+    author: {name: "郦道元", period: "北魏", bio: "地理学家，曾任御史中尉"},
+    chartData: {labels: ["水文","考证","文学","影响"], data: [9,9,8,10]},
+    image: "geo-shuijing.jpg"
+  },
+  {
+    title: "十道图",
+    year: 639,
+    content: "按'山河形便'原则划分关内、河南等十道，辖358州府、1551县。采用朱、墨双色标注行政区与地形，首创'图经'体制（地图+文字说明）。敦煌遗书P.2511号卷存陇右道残图，标注驿站距离精确到唐里（1里≈450米），成为研究唐代邮驿体系关键实物。",
+    impact: ["首套全国行政区划图","确立道-州-县体系","影响后世方志编纂"],
+    author: {name: "李泰等", period: "唐代", bio: "魏王李泰主持编纂"},
+    chartData: {labels: ["区划","精度","行政","体系"], data: [9,7,8,8]},
+    image: "geo-shidao.jpg"
+  },
+  {
+    title: "西天路竟",
+    year: 950,
+    content: "记录河西走廊至天竺（印度）的17国行程，详载玉门关至缚喝国（今阿富汗巴尔赫）94个驿站间距。用'马行日'（日行70里）计量距离，标注沙漠'无水草处二百四十里'。与玄奘《大唐西域记》比对，证实于阗玉龙喀什河渡口位置误差仅3公里。",
+    impact: ["最早丝路路线实录","中西交通重要见证","研究西域地理珍本"],
+    author: {name: "敦煌僧侣", period: "五代", bio: "河西走廊行脚僧人记录"},
+    chartData: {labels: ["交通","考证","记录","价值"], data: [9,8,10,9]},
+    image: "geo-xitian.jpg"
+  },
+  {
+    title: "舆地图",
+    year: 1267,
+    content: "石刻地图采用'计里画方'法，每方折地百里（约55公里），标注府州县治所832处。海岸线绘制精确显示胶州湾、杭州湾轮廓，长江入海口位置误差仅0.5经度。朝鲜《混一疆理历代国都之图》直接临摹其东亚部分，14世纪传入日本影响《行基图》制作。",
+    impact: ["现存最早石刻地图","科学制图典范","影响朝鲜日本制图"],
+    author: {name: "黄裳", period: "南宋", bio: "礼部尚书，进献帝王图"},
+    chartData: {labels: ["精度","方法","工艺","影响"], data: [9,10,8,8]},
+    image: "geo-yudi.jpg"
+  },
+  {
+    title: "郑和航海图",
+    year: 1430,
+    content: "《自宝船厂开船从龙江关出水直抵外国诸番图》详记530个航点，使用'牵星过洋'术标注北辰星高度（如古里9指）。标注印度洋季风周期误差仅3天，记录亚丁湾索科特拉岛位置精确到分（12°38'N）。葡萄牙史家巴洛斯1548年著作大量引用该图非洲东岸数据。",
+    impact: ["最详实古代海图","记录海上丝绸之路","融合阿拉伯航海技术"],
+    author: {name: "郑和船队", period: "明代", bio: "航海家集体测绘成果"},
+    chartData: {labels: ["航海","交流","记录","技术"], data: [10,9,9,8]},
+    image: "geo-zhenghe.jpg"
+  },
+  {
+    title: "徐霞客游记",
+    year: 1641,
+    content: "实地测量洞穴386个，其中记录桂林七星岩15个洞厅立体结构误差小于3%。发现金沙江为长江正源，纠正《禹贡》'岷山导江'之误。测算黄山朱砂峰海拔1840米（现代测1841米），其岩溶地貌分类比西方学者诺曼19世纪研究早200余年。",
+    impact: ["岩溶地貌研究先驱","科学考察方法典范","纠正古籍地理谬误"],
+    author: {name: "徐霞客", period: "明代", bio: "地理学家，30年游历考察"},
+    chartData: {labels: ["考察","地貌","方法","影响"], data: [10,9,9,10]},
+    image: "geo-xuxiake.jpg"
+  },
+  {
+    title: "皇舆全览图",
+    year: 1718,
+    content: "历时10年测绘，设立641个三角测量点，首次测定珠穆朗玛峰位置（时称'朱母郎马阿林'）。采用桑逊投影法，经线收敛误差控制在1'以内。法国杜赫德1735年《中华帝国全志》收录其东北部地图，成为欧洲了解中国地理的基准数据达百年。",
+    impact: ["首套全国实测地图","融合中西测绘技术","精确度领先当时世界"],
+    author: {name: "雷孝思等", period: "清代", bio: "传教士与中国学者合作"},
+    chartData: {labels: ["测绘","技术","精度","体系"], data: [10,9,10,8]},
+    image: "geo-kangxi.jpg"
+  }
+],
+
+工程技术:[
+  {
+    title: "都江堰",
+    year: -256,
+    content: "采用鱼嘴四六分洪（枯水期内江引水60%，外江40%）、飞沙堰离心排沙（粒径＞2cm沙石排除率98%）的科学设计。渠首工程与宝瓶口形成天然节制闸，使成都平原灌溉面积从150万亩增至1935年的300万亩，至今调控着34万亩农田用水，2018年灌区扩展至1134万亩。",
+    impact: ["现存最古老无坝水利系统","成都平原成为天府之国","持续使用2200余年"],
+    author: {name: "李冰父子", period: "战国秦国", bio: "蜀郡太守主持修建，工程智慧结晶"},
+    chartData: {labels: ["水利","生态","耐久","创新"], data: [10,9,10,9]},
+    image: "eng-dujiangyan.jpg"
+  },
+  {
+    title: "秦直道",
+    year: -212,
+    content: "路基经'炒土'去草籽处理，每层夯土厚6-8cm，抗压强度达12MPa。现代遥感发现内蒙古东胜段保存40公里完整路基，最宽处达82米。路基两侧排水沟深1.5米，坡度精确控制在3‰，雨后可2小时排净积水，至今局部路段仍可通行载重卡车。",
+    impact: ["古代道路工程巅峰","路基至今不生杂草","军事交通工程典范"],
+    author: {name: "蒙恬", period: "秦代", bio: "大将军监修国防工程"},
+    chartData: {labels: ["道路","军事","工艺","影响"], data: [9,9,10,8]},
+    image: "eng-zhidao.jpg"
+  },
+  {
+    title: "赵州桥",
+    year: 605,
+    content: "主拱由28道独立拱券纵向并列，首创腰铁加固横向连接（共用72块铁拉杆）。桥体矢跨比1:5.2，在均布载荷下拱脚应力仅0.8MPa。1991年邢台地震（6.8级）实测桥体水平加速度0.35g仍完好，现代计算其抗震设防烈度达10度。",
+    impact: ["现存最早石拱桥","结构力学重大突破","影响世界桥梁设计"],
+    author: {name: "李春", period: "隋代", bio: "匠师，具体生平失传"},
+    chartData: {labels: ["结构","抗震","工艺","创新"], data: [10,10,9,10]},
+    image: "eng-zhaozhou.jpg"
+  },
+  {
+    title: "大运河",
+    year: 611,
+    content: "通济渠段采用24座斗门船闸（间距5-10里），实现水位高差31米的连续通航。元代改造后年运粮量达400万石（约24万吨），清江浦船闸日通过量达300艘。2014年申遗成功时测绘全长为2681公里，其中27段遗产河道至今保持通航能力。",
+    impact: ["世界最长古代运河","经济大动脉运行千年","水利工程集成典范"],
+    author: {name: "宇文恺等", period: "隋代", bio: "多代工程团队接力建造"},
+    chartData: {labels: ["航运","水利","规模","影响"], data: [10,9,10,10]},
+    image: "eng-canal.jpg"
+  },
+  {
+    title: "水运仪象台",
+    year: 1092,
+    content: "枢轮直径3米，由36个水斗驱动，每日误差＜2分钟。浑仪采用滚柱轴承减少摩擦，演示283官星象。英国李约瑟实测复原模型证实其擒纵机构控制精度达150秒/日，比欧洲首台机械钟早324年实现等时性控制。",
+    impact: ["世界最早机械时钟","精密齿轮系统典范","天文仪器制造巅峰"],
+    author: {name: "苏颂", period: "北宋", bio: "科学家，官至宰相"},
+    chartData: {labels: ["机械","天文","精度","创新"], data: [10,9,9,10]},
+    image: "eng-clock.jpg"
+  },
+  {
+    title: "应县木塔",
+    year: 1056,
+    content: "使用华北落叶松木料2600m³，斗栱样式含54种（其中8种为辽代独有）。暗层中采用24组斜撑形成桁架结构，现代振动台试验证明可抗9度地震。塔刹铁件总重4.8吨，八根铁链拉力均衡控制在12kN±0.5kN，历经40次5级以上地震仍垂直偏差仅0.67度。",
+    impact: ["现存最高木构建筑","抗震结构集大成者","建筑工艺活化石"],
+    author: {name: "佚名匠师", period: "辽代", bio: "契丹族建筑大师"},
+    chartData: {labels: ["木构","抗震","工艺","保存"], data: [10,10,9,10]},
+    image: "eng-yingxian.jpg"
+  },
+  {
+    title: "自贡燊海井",
+    year: 1835,
+    content: "使用鱼尾锉钻头（重250kg）冲击破碎岩层，井管由楠木制成（壁厚8cm）。钻至1001.42米时获日产8500m³天然气与14m³卤水，1839年日产盐量达4800kg。美国德雷克1859年首口油井（21.69米）借鉴其顿钻技术，现存天车架高18.4米仍可运转。",
+    impact: ["深井钻探技术突破","现代石油钻井先驱","古代盐业工程巅峰"],
+    author: {name: "自贡盐工", period: "清代", bio: "集体智慧传承千年"},
+    chartData: {labels: ["钻井","深度","工艺","影响"], data: [10,10,9,8]},
+    image: "eng-shenhai.jpg"
+  },
+  {
+    title: "故宫建筑群",
+    year: 1420,
+    content: "地基深达8.5米，由15层夯土与糯米灰浆交替构成。太和殿72根金丝楠木柱（最大直径1.06米）采用'侧脚'工艺内倾6‰，现代计算整体重心偏移仅2.3cm。2017年振动台试验显示其斗栱结构可消耗80%地震能量，在9度震时位移量＜15cm。",
+    impact: ["木构建筑工艺巅峰","建筑体系集大成者","影响东亚宫殿形制"],
+    author: {name: "蒯祥等", period: "明代", bio: "匠师世家，官至工部侍郎"},
+    chartData: {labels: ["建筑","工艺","规划","保存"], data: [10,10,9,10]},
+    image: "eng-forbidden.jpg"
+  },
+  {
+    title: "郑和宝船",
+    year: 1405,
+    content: "主龙骨长60米（选用整根铁力木），12层水密隔舱壁厚18cm。舵叶面积19㎡采用升降设计（浅水区可提升3米），七桅十二帆总面积2600㎡。2004年仿古船'瀛洲'号实测抗风10级，航速达8节，验证《西洋记》载'吃水4丈'的可行性。",
+    impact: ["古代最大木质帆船","航海技术集成典范","造船工艺最高成就"],
+    author: {name: "郑和船厂", period: "明代", bio: "南京龙江船厂建造"},
+    chartData: {labels: ["造船","航海","规模","技术"], data: [10,9,10,9]},
+    image: "eng-treasure.jpg"
+  },
+  {
+    title: "天工开物",
+    year: 1637,
+    content: "详载'灌钢法'（生铁淋口硬度达HRC58）、'火法炼锌'（炉温控制1200℃±20℃）等193项技术。提花机图示含1800个构件，日本佐藤信渊1827年《经济要录》引用其24项农技，欧洲儒莲1869年法译本推动冶铁技术改良。现存明代初版残卷含123幅精密插图。",
+    impact: ["技术百科全书","保留失传工艺","影响日本产业革命"],
+    author: {name: "宋应星", period: "明代", bio: "科学家，曾任教谕"},
+    chartData: {labels: ["记录","工艺","体系","影响"], data: [10,9,9,10]},
+    image: "eng-tiangong.jpg"
+  }
+],
+};
+class ScienceCarousel {
+    constructor() {
+        this.currentField = '医学';
+        this.carousel = document.getElementById('carousel');
+        this.currentIndex = 0;
+        this.charts = [];
+        this.radius = 0;
+        
+        this.initSystem();
+        this.setupGlobalEvents();
+    }
+
+    initSystem() {
+        this.cleanup();
+        this.calculateRadius();
+        this.createItems();
+        this.createTimeline();
+        this.createNavigation();
+        this.updatePosition();
+    }
+
+    cleanup() {
+        this.carousel.innerHTML = '';
+        document.getElementById('timeline').innerHTML = '';
+        document.getElementById('nav').innerHTML = '';
+        this.charts.forEach(chart => chart.destroy());
+        this.charts = [];
+    }
+
+    calculateRadius() {
+        const count = ALL_DATA[this.currentField].length;
+        this.radius = Math.min(window.innerWidth, 800) / (2 * Math.tan(Math.PI / count));
+    }
+
+    createItems() {
+        ALL_DATA[this.currentField].forEach((data, index) => {
+            const item = document.createElement('div');
+            item.className = 'carousel-item';
+            item.innerHTML = `
+                <h2 class="item-title">${data.title}</h2>
+                <div class="item-content">
+                    <h3>主要成就</h3>
+                    <p>${data.content}</p>
+                    <h3>历史影响</h3>
+                    <ul>${data.impact.map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>
+                <div class="item-author">
+                    <h4>${data.author.name}</h4>
+                    <p>${data.author.period}</p>
+                </div>
+                <div class="item-chart">
+                    <canvas id="chart-${this.currentField}-${index}"></canvas>
+                </div>
+            `;
+            this.carousel.appendChild(item);
+            this.initChart(item.querySelector('canvas'), data.chartData);
+        });
+    }
+
+    initChart(canvas, data) {
+    const chart = new Chart(canvas, {
+        type: 'radar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                backgroundColor: 'rgba(151, 188, 98, 0.2)',
+                borderColor: 'var(--primary)',
+                pointBackgroundColor: 'var(--primary)'
+            }]
+        },
+        options: {
+            scales: { 
+                r: { 
+                    beginAtZero: true, 
+                    max: 10, 
+                    ticks: { display: false } 
+                } 
+            },
+            plugins: {
+                legend: {
+                    display: false // 正确隐藏图例
+                },
+                title: {
+                    display: false // 隐藏标题（如果有）
+                }
+            }
+        }
+    });
+    this.charts.push(chart);
+}
+
+    createTimeline() {
+        const timeline = document.getElementById('timeline');
+        const years = ALL_DATA[this.currentField].map(d => d.year);
+        const minYear = Math.min(...years);
+        const maxYear = Math.max(...years);
+        const range = maxYear - minYear;
+
+        ALL_DATA[this.currentField].forEach((data, index) => {
+            const marker = document.createElement('div');
+            marker.className = 'timeline-marker';
+            marker.style.top = `${((data.year - minYear)/range)*100}%`;
+            marker.dataset.index = index;
+            timeline.appendChild(marker);
+        });
+    }
+
+    createNavigation() {
+        const nav = document.getElementById('nav');
+        ALL_DATA[this.currentField].forEach((data, index) => {
+            const button = document.createElement('button');
+            button.className = 'nav-button';
+            button.textContent = `成就 ${index + 1}`;
+            button.dataset.title = data.title;
+            button.dataset.index = index;
+            nav.appendChild(button);
+        });
+    }
+
+    setupGlobalEvents() {
+        // 顶部导航切换
+        document.getElementById('mainNav').addEventListener('click', e => {
+            if (e.target.classList.contains('nav-item')) {
+                const field = e.target.dataset.field;
+                document.querySelectorAll('.nav-item').forEach(item => 
+                    item.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                this.currentField = field;
+                this.currentIndex = 0;
+                this.initSystem();
+            }
+        });
+
+        document.getElementById('nav').addEventListener('click', e => {
+            if (e.target.classList.contains('nav-button')) {
+                this.currentIndex = parseInt(e.target.dataset.index);
+                this.updatePosition();
+            }
+        });
+
+        // 时间线点击事件
+        document.getElementById('timeline').addEventListener('click', e => {
+            if (e.target.classList.contains('timeline-marker')) {
+                this.currentIndex = parseInt(e.target.dataset.index);
+                this.updatePosition();
+            }
+        });
+
+        // 键盘控制
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') this.prev();
+            if (e.key === 'ArrowRight') this.next();
+        });
+
+        // 触摸事件
+        let touchStartX = 0;
+        this.carousel.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+        this.carousel.addEventListener('touchend', e => {
+            const delta = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(delta) > 50) {
+                delta > 0 ? this.prev() : this.next();
+            }
+        });
+    }
+
+    updatePosition() {
+        Array.from(this.carousel.children).forEach((item, index) => {
+            const angle = (index - this.currentIndex) * (360 / ALL_DATA[this.currentField].length);
+            item.style.transform = `rotateY(${angle}deg) translateZ(${this.radius}px) scale(${index === this.currentIndex ? 1 : 0.8})`;
+            item.style.opacity = index === this.currentIndex ? 1 : 0.6;
+        });
+
+        document.querySelectorAll('.timeline-marker').forEach((marker, i) => {
+            marker.classList.toggle('active', i === this.currentIndex);
+        });
+
+        this.charts.forEach((chart, i) => {
+            chart.options.scales.r.pointLabels.display = i === this.currentIndex;
+            chart.update();
+        });
+    }
+
+    prev() {
+        this.currentIndex = (this.currentIndex - 1 + ALL_DATA[this.currentField].length) % ALL_DATA[this.currentField].length;
+        this.updatePosition();
+    }
+
+    next() {
+        this.currentIndex = (this.currentIndex + 1) % ALL_DATA[this.currentField].length;
+        this.updatePosition();
+    }
+}
+
+new ScienceCarousel();
+/* 性能优化 */
+// 图片懒加载
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;
+            observer.unobserve(img);
+        }
+    });
+});
+
+document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+
+// 预加载关键资源
+window.addEventListener('load', () => {
+    MEDICAL_DATA.forEach(data => {
+        new Image().src = data.image;
+    });
+});
+
+</script>
+</body>
+</html>

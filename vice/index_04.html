@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华夏四大发明</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../images/index_04.jpg">
+    <style>
+        :root {
+            --primary-red: #b71c1c;
+            --ink-black: #2d2926;
+            --antique-gold: #c5a368;
+            --scrollbar-bg: #e0d6c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #f5efe0 0%, #e8dfcb 100%);
+            font-family: 'Noto Serif SC', serif;
+            overflow-x: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 8px;
+            background: var(--scrollbar-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--antique-gold);
+            border-radius: 6px;
+        }
+
+        .container {
+            min-width: 1200px;
+            padding: 4rem 2rem;
+        }
+
+        .page-title {
+            font-family: 'ZCOOL XiaoWei', serif;
+            text-align: center;
+            font-size: 4rem;
+            color: var(--primary-red);
+            margin-bottom: 3rem;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+
+        .inventions-list {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+            padding: 2rem 0;
+            perspective: 2000px;
+        }
+
+        .invention-item {
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invention-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, 
+                transparent 0%, 
+                rgba(197, 163, 104, 0.1) 50%, 
+                transparent 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .invention-item:hover {
+            transform: rotateY(10deg) rotateX(3deg) translateY(-10px) scale(1.05);
+            box-shadow: 0 30px 60px -10px rgba(0,0,0,0.25);
+        }
+
+        .img-container {
+            height: 320px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 16px 16px 0 0;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+
+        .img-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .invention-item:hover .img-container img {
+            transform: scale(1.1) rotate(1deg);
+        }
+
+        .content {
+            padding: 2rem;
+            position: relative;
+            background: white;
+        }
+
+        .content h3 {
+            font-family: 'ZCOOL XiaoWei', serif;
+            color: var(--ink-black);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .content h3::before {
+            content: '「';
+            position: absolute;
+            left: 0;
+            color: var(--primary-red);
+            font-size: 2.2rem;
+            line-height: 1;
+            top: -0.2em;
+        }
+
+        .content h3::after {
+            content: '」';
+            position: absolute;
+            right: -0.8rem;
+            color: var(--primary-red);
+            font-size: 2.2rem;
+            line-height: 1;
+            top: -0.2em;
+        }
+
+        .content p {
+            height: 150px;
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.8;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .content p::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.4em;
+            width: 3px;
+            height: 1.2em;
+            background: var(--antique-gold);
+        }
+        .back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(145deg, #2a5f7a 0%, #1a4b6d 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  font-family: 'Noto Serif SC', serif;
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+@media (max-width: 768px) {
+  .back-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+        /* 加载动画 */
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(50px) rotateX(-30deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        .invention-item {
+            animation: cardEntrance 0.6s ease backwards;
+        }
+
+        .invention-item:nth-child(1) { animation-delay: 0.2s; }
+        .invention-item:nth-child(2) { animation-delay: 0.4s; }
+        .invention-item:nth-child(3) { animation-delay: 0.6s; }
+        .invention-item:nth-child(4) { animation-delay: 0.8s; }
+
+        /* 响应式调整 */
+        @media (max-width: 1280px) {
+            .container {
+                min-width: 100%;
+                padding: 2rem 1rem;
+            }
+            
+            .inventions-list {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .invention-item {
+                width: 45%;
+                max-width: 320px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invention-item {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">← 返回上一页</a>
+    <div class="container">
+        <h1 class="page-title">四大发明</h1>
+        <ul class="inventions-list">
+            <!-- 造纸术 -->
+            <li class="invention-item" onclick="this.classList.add('clicked'); setTimeout(()=>location.href='../fourmade/makepaper.html', 600)">
+                <div class="img-container">
+                    <img src="../images_background/b-zao.jpg" alt="造纸术">
+                </div>
+                <div class="content">
+                    <h3>楮纸天工</h3>
+                    <p>汉和帝元兴元年，尚方令蔡伦集树肤、麻头、敝布、渔网以为纸，奏上之，帝善其能。自此简牍缣帛皆废，文明薪火得传万里，遂有丝路纸道通西域。</p>
+                </div>
+            </li>
+
+            <!-- 印刷术 -->
+            <li class="invention-item" onclick="this.classList.add('clicked'); setTimeout(()=>location.href='../fourmade/yinshuashu.html', 600)">
+                <div class="img-container">
+                    <img src="../images_background/b-yin.jpg" alt="活字印刷">
+                </div>
+                <div class="content">
+                    <h3>活字春秋</h3>
+                    <p>宋庆历间，布衣毕昇始为活版。其法用胶泥刻字，火烧令坚。元代易木，明弘治铜范盛行。较之古腾堡早四百春秋，文明星火遂燎原宇内。</p>
+                </div>
+            </li>
+
+            <!-- 指南针 -->
+            <li class="invention-item" onclick="this.classList.add('clicked'); setTimeout(()=>location.href='../fourmade/zhinanzhen.html', 600)">
+                <div class="img-container">
+                    <img src="../images_background/b-zhi.jpg" alt="指南针">
+                </div>
+                <div class="content">
+                    <h3>司南指极</h3>
+                    <p>自战国司南至宋之水浮磁针，先民察磁石指南之性。郑和七下西洋，凭针经牵星过海。西传后促成地理大发现，寰宇自此无远疆。</p>
+                </div>
+            </li>
+
+            <!-- 火药 -->
+            <li class="invention-item" onclick="this.classList.add('clicked'); setTimeout(()=>location.href='../fourmade/huoyao.html', 600)">
+                <div class="img-container">
+                    <img src="../images_background/b_huao.jpg" alt="神机火铳">
+                </div>
+                <div class="content">
+                    <h3>丹鼎惊雷</h3>
+                    <p>唐时炼丹家偶得硝磺爆燃之秘，宋《武经总要》首载火药配方。元明火器日精，佛郎机、红夷炮皆源于此。虽肇始道门，终改战争史章。</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // 添加点击动画
+        document.querySelectorAll('.invention-item').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95) rotateY(20deg)';
+                this.style.opacity = '0.8';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    this.style.opacity = '';
+                }, 600);
+            });
+        });
+
+        // 鼠标跟随光影效果
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.invention-item');
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width/2;
+                const cardY = rect.top + rect.height/2;
+                
+                const deltaX = mouseX - cardX;
+                const deltaY = mouseY - cardY;
+                const distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+                
+                card.style.setProperty('--mouse-distance', distance + 'px');
+                card.style.setProperty('--mouse-x', deltaX + 'px');
+                card.style.setProperty('--mouse-y', deltaY + 'px');
+            });
+        });
+    </script>
+</body>
+</html>
