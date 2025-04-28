@@ -1,0 +1,191 @@
+@charset "utf-8";
+/* CSS Document */
+*{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box}
+*,body{padding:0px;	margin:0px;font-family: "微软雅黑";}
+body{color:#000000;font-size: 16px; background:url(../images_background/b_4.jpg) no-repeat; background-size: 100% 100%;
+}
+li,ul{
+	margin:0;
+	padding:0;
+  　-webkit-appearance:none;
+    border:0;
+    list-style:none;
+	 /* box-sizing:border-box; */ } 
+@font-face{font-family:electronicFont;src:url(../font/DS-DIGIT.TTF)}
+html,body{min-height: 100%;}
+li{ list-style-type:none;}
+i{ margin:0px; padding:0px; text-indent:0px;}
+img{ border:none; max-width: 100%;}
+a{ text-decoration:none; color:#382121;}
+a.active,a:focus{ outline:none!important; text-decoration:none;}
+ol,ul,p,h1,h2,h3,h4,h5,h6{ padding:0; margin:0}
+a:hover{ color:rgb(255, 255, 255); text-decoration: none!important}
+
+.rightMain_bottom{
+	width:100%;
+	}
+.rightMain_bottomIn{
+	border:0.008rem solid #616161;
+	width:100%;
+	min-height:60px;
+	position:relative;
+	padding:0;
+	}
+.rightMain_bottomIn h3{
+	font-size:0.08rem;
+	color:#6e6e6e;
+	margin-bottom:0.05rem;
+	}
+
+.rightMain_bottomIn .biaoge{
+	min-height:200px;}
+.rightMain_bottomIn .biaoge_list{
+	overflow:scroll;
+	position: relative;}
+.rightMain_bottomIn .biaoge_list .biaoge_listIn .ul_list{
+	overflow:hidden;
+	position: relative;}
+.rightMain_bottomIn .biaoge_list .biaoge_listIn .ul_list{
+	-webkit-animation: 14s gundong linear infinite normal;
+    animation: 14s gundong linear infinite normal;
+    position: relative;}
+@keyframes gundong {
+    0% {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        -webkit-transform: translate3d(0, -50vh, 0);
+        transform: translate3d(0, -50vh, 0);
+    }
+} 
+
+.rightMain_bottomIn .biaoge_list ul{
+	display:flex;
+	display: -webkit-flex;
+	width:100%;
+	}
+.rightMain_bottomIn .biaoge_list .ul_title{
+	background: linear-gradient(left, rgba(101, 101, 101, 0.63), rgba(0, 0, 0, 0.5), rgba(128, 122, 122, 0.525));
+        background: -ms-linear-gradient(left, rgba(26, 26, 26, 0.1), rgba(0, 0, 0, 0.5), rgba(22, 21, 21, 0.1));
+        background: -webkit-linear-gradient(left,  rgba(115, 115, 115, 0.1), rgba(0, 0, 0, 0.5), rgba(22, 21, 21, 0.1));
+        background: -moz-linear-gradient(left, rgba(26, 26, 26, 0.1), rgba(0, 0, 0, 0.5), rgba(22, 21, 21, 0.1));
+}
+.ul_title {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: #f8f9fa;
+    position: relative;
+	z-index: 1000;
+	color: #fff0f0;
+}
+.profession-header {
+    cursor: pointer;
+    position: relative;
+}
+
+.profession-selector {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 80px;
+    z-index: 100;
+    top: 38px; /* 根据标题栏高度调整 */
+    left: 0%; /* 根据职业列位置调整 */
+}
+
+.profession-selector.visible {
+    display: block;
+}
+
+.option {
+    padding: 8px 12px;
+    transition: all 0.2s;
+}
+
+.option:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+/* 添加交互指示 */
+.profession-header:hover {
+    color: #228be6;
+    text-decoration: underline dotted;
+}
+.rightMain_bottomIn .biaoge_list .ul_con{
+	border-bottom:0.008rem solid #989898;}
+.rightMain_bottomIn .biaoge_list ul li{
+	width:20%;
+	text-align:center;
+	color:#070707;
+	font-size:0.06rem;
+	height:0.2rem;
+	line-height:0.2rem;}
+.rightMain_bottomIn .biaoge_list ul li:frist-child{
+	text-align:left;}
+
+.clearfix:after, .clearfix:before {display: table;content: " ";margin: 20px;}
+ .clearfix:after {clear: both;}
+.pulll_left{float:left;}
+.pulll_right{float:right;}
+i{font-style: normal;}
+.head {
+	padding-bottom: 10px;
+}
+.head{position: relative; height: 90px; margin: 0 15px; padding-right: 60px;}
+.head h1{  font-size: 30px; letter-spacing: -2px; text-align: center; line-height: 90px; padding-right: 80px; padding-left: 470px;color: #161616;}
+.head .menu{}
+.head .menu ul{ font-size: 0;}
+
+.head .menu li{ display: inline-block; position: relative;margin: 30px 15px;;}
+.head .menu li a{ display: block; font-size: 18px; color: #151414; line-height: 30px; padding: 0 20px; }
+.head .time{position: absolute; right: 0; line-height: 90px; top: 0;}
+.menu li:before,
+.menu li:after{ position:absolute; width:10px; height:5px;opacity: .4; content: "";  border-top: 2px solid #111111; top: -1px;border-radius: 2px;}
+.menu li:before,.menu li a:before{border-left: 2px solid #0b0b0b;left: -1px;}
+.menu li:after,.menu li a:after{border-right: 2px solid #080707; right: -1px;}
+.menu li a{ position:relative;}
+.menu li a:before,
+.menu li a:after{ position:absolute; width:10px; height:5px; opacity: .4;  content: "";border-bottom: 2px solid #1b1b1b; bottom:-1px;border-radius: 2px;}
+
+.head .menu li a:hover{ color: #606060;}
+.menu li a:hover:before,
+.menu li a:hover:after,
+.menu li:hover:before,
+.menu li:hover:after{border-color:  #464646; opacity: 1;}
+
+.mainbox{padding: 0px 10px;}
+.nav1{margin-left: -6px; margin-right:-6px;}
+.nav1>li{padding:0 6px; float: left;}
+
+.box{ border:1px solid rgba(129, 129, 129, 0.5); box-shadow:inset 0 0 10px rgba(34, 35, 35, 0.4); margin-bottom: 12px; position: relative;}
+.tit{ padding: 10px 10px 10px 25px;border-bottom:1px solid rgba(28, 28, 28, 0.7);font-size: 16px; font-weight: 500; position: relative;}
+.tit:before,.tit01:before{position: absolute; content: ""; width: 6px; height: 6px; background: rgba(29, 29, 29, 0.9);box-shadow: 0 0 5px rgba(160, 160, 160, 0.9); border-radius: 10px; left: 10px; top: 18px;}
+
+.tit:after,.box:before{ width: 100%; height: 1px; content: ""; position: absolute; left: 0; bottom:-1px; background:linear-gradient(to right,#8e8e8e,#adaeaf,#4d4d4d); box-shadow: 0 0 5px rgb(210, 211, 212); opacity: .6}
+.box:before{top: -1px;}
+
+.boxnav{padding: 10px;}
+.tit01{font-size: 16px; font-weight: 500; position: relative; padding-left: 15px;}
+.tit01:before{ left: 3px; top: 8px;}
+.map{position: relative; height: 100%;}
+.map img{}
+.mapnav{position: absolute;z-index: 10;}
+
+@keyframes myfirst
+{
+to { transform: rotate(-360deg)}
+}
+@keyframes myfirst2
+{
+to { transform: rotate(360deg)}
+}
+
+
+

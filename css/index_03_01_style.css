@@ -1,0 +1,129 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+.menu{position: fixed;top: 30px;right: 60px;}
+.menu li{ display: inline-block; position: relative}
+.menu li a{ display: block; font-size: 18px; color: #151414; line-height: 30px; padding: 0 20px; }
+.menu li:before,
+.menu li:after{ position:absolute; width:10px; height:5px;opacity: .4; content: ""; border-top: 2px solid #111111; top: -1px;border-radius: 2px;}
+.menu li:before,.menu li a:before{border-left: 2px solid #0b0b0b;left: -1px;}
+.menu li:after,.menu li a:after{border-right: 2px solid #080707; right: -1px;}
+.menu li a{ position:relative;}
+.menu li a:before,
+.menu li a:after{ position:absolute; width:10px; height:5px; opacity: .4; content: "";border-bottom: 2px solid #1b1b1b; bottom:-1px;border-radius: 2px;}
+.menu li a:hover:before,
+.menu li a:hover:after,
+.menu li:hover:before,
+.menu li:hover:after{border-color:  #464646; opacity: 1;}
+  
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; 
+    height: 105vh;
+    background: url('../images_background/b_1.jpg');
+    background-size: 105%;
+    animation: bgmove 15s infinite; /* 添加 infinite 让动画无限循环 */
+    animation-timing-function: linear; /* 可选：让动画匀速运动 */
+}
+
+@keyframes bgmove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+ 
+.shell {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 130px 0;
+}
+
+.carousel {
+    position: relative;
+    width: 520px;
+    height: 500px;
+    padding-top: 100px;
+    /*空间感*/
+    perspective: 300px;
+}
+/**/
+.arrows {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    position: absolute;
+    right: -87px;
+}
+
+.up,
+.next {
+    margin: 5px 0;
+    padding: 5px;
+    width: 70px;
+    height: 70px;
+    border: 3px solid rgb(255, 255, 255);
+    border-radius: 10px;
+    background-color: #ffffff61;
+    color: #fff;
+    transition: .3s;
+}
+
+.up:hover,
+.next:hover {
+    background-color: #e8e2e2;
+    color: #76767c;
+}
+
+.boxs {
+    width: 100%;
+    height: 240px;
+     position: absolute;
+    /*所有子元素3D*/
+     transform-style: preserve-3d;
+     transition: 1s;
+    }
+    
+    .box {
+     position: absolute;
+    width: 700px;
+    height: 250px;
+    left: -100px;
+    border: 2px solid white;
+     border-radius: 10px;
+     overflow: hidden;
+     opacity: .7;
+    }
+    
+    .box img {
+    width: 100%;
+    height: 100%;
+    }
+    
+
+.hui>a>h1{
+    color: #08050a;
+    bottom: 100px;
+}
+.hui>a>h1:hover{
+    color: #9c9a9cfe;
+}
+.box.selected {
+    border-color: rgb(96, 96, 95);
+    border-width: 5px;
+    opacity: 1;
+}

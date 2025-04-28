@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>火药革命 - 互动实验</title>
+    <link rel="icon" href="../images/fourmade_huo.jpg">
+    <style>
+        :root {
+            --primary: #8B0000;
+            --secondary: #FFA500;
+            --accent: #FFD700;
+            --lab-bg: #1a1a1a;
+            --error: #ff4444;
+            --success: #00c853;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            background: var(--lab-bg);
+            color: white;
+            touch-action: manipulation;
+        }
+
+        /* 实验容器 */
+        .lab-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(0,0,0,0.7);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255,165,0,0.2);
+            position: relative;
+        }
+/* 新增拖拽视觉反馈 */
+.drag-ghost {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px rgba(255,165,0,0.5));
+    transform: scale(0.9);
+    pointer-events: none;
+    position: fixed;
+    z-index: 9999;
+    transition: transform 0.1s ease-out;
+}
+
+/* 修复移动端拖拽反馈 */
+@media (pointer: coarse) {
+    .ingredient:active {
+        transform: scale(0.95) rotateZ(-2deg);
+    }
+}
+
+/* 优化混合区激活状态 */
+.mixing-area.active::after {
+    content: "释放以添加材料";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--accent);
+    font-size: 1.2em;
+}
+        /* 材料系统 */
+        .ingredient-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .ingredient {
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: grab;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .ingredient.dragging {
+            transform: scale(0.95) rotateZ(-2deg);
+            box-shadow: 0 5px 15px rgba(255,165,0,0.3);
+            border-color: var(--accent);
+        }
+
+        .ingredient::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, 
+                rgba(255,215,0,0.1) 0%,
+                rgba(255,165,0,0.05) 100%
+            );
+            pointer-events: none;
+        }
+
+        .percentage {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        /* 混合区 */
+        .mixing-area {
+            min-height: 200px;
+            border: 3px dashed var(--secondary);
+            border-radius: 15px;
+            margin: 2rem 0;
+            position: relative;
+            transition: border-color 0.3s;
+            background: rgba(255,165,0,0.05);
+        }
+
+        .mixing-area.active {
+            background: rgba(255,165,0,0.1);
+            border-color: var(--accent);
+        }
+
+        /* 配方显示 */
+        .formula-display {
+            display: grid;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .formula-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                var(--secondary) 0%, 
+                var(--accent) 100%
+            );
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.2) 50%,
+                transparent 100%
+            );
+            animation: shine 1.5s infinite;
+        }
+        .back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(145deg, #2a5f7a 0%, #1a4b6d 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  font-family: 'Noto Serif SC', serif;
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+  .back-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(145deg, var(--primary), #6b0000);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255,165,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* 结果面板 */
+        .result-panel {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            color: var(--success);
+            text-align: center;
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        .error {
+            color: var(--error);
+            text-align: center;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 10px rgba(0,200,83,0.5); }
+            50% { text-shadow: 0 0 20px rgba(0,200,83,0.8); }
+            100% { text-shadow: 0 0 10px rgba(0,200,83,0.5); }
+        }
+
+        /* 时间线 */
+        .era-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .era-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .era-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255,165,0,0.2);
+        }
+
+        /* 爆炸效果 */
+        .explosion {
+            position: absolute;
+            pointer-events: none;
+            background: radial-gradient(circle at center, 
+                rgba(255,69,0,0.8) 0%,
+                rgba(255,165,0,0.6) 30%,
+                transparent 70%
+            );
+            opacity: 0;
+            animation: explode 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .drag-ghost {
+    transition: transform 0.1s ease-out;
+    filter: drop-shadow(0 0 8px rgba(255,165,0,0.5));
+}
+
+.ingredient.dragging {
+    opacity: 0.5;
+    transform: scale(0.95) rotateZ(-3deg);
+}
+
+@media (pointer: fine) {
+    .ingredient:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255,165,0,0.3);
+    }
+}
+
+/* 禁用文本选择 */
+.ingredient {
+    user-select: none;
+    -webkit-user-drag: element;
+}
+
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.8; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ingredient-grid {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1em;
+            }
+
+            .lab-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../vice/fourcreations.html" class="back-btn">
+        ← 返回上一页
+      </a>
+    <div class="lab-container">
+        <h1 style="text-align:center; color:var(--accent); margin-bottom:2rem;">🔥 火药革命实验室</h1>
+        
+        <div class="ingredient-grid">
+            <div class="ingredient" data-material="nitrate">
+                <div class="name">硝石</div>
+                <div class="percentage">75%</div>
+            </div>
+            <div class="ingredient" data-material="sulfur">
+                <div class="name">硫磺</div>
+                <div class="percentage">10%</div>
+            </div>
+            <div class="ingredient" data-material="charcoal">
+                <div class="name">木炭</div>
+                <div class="percentage">15%</div>
+            </div>
+        </div>
+
+        <div class="mixing-area" id="mixingArea">
+            <div class="formula-display" id="formulaDisplay"></div>
+        </div>
+
+        <div class="control-buttons">
+            <button onclick="ignite()">🔥 点燃测试</button>
+            <button onclick="resetExperiment()">🔄 重置实验</button>
+        </div>
+
+        <div id="experimentResult" class="result-panel"></div>
+    </div>
+
+    <div class="era-timeline">
+        <div class="era-card" data-era="0">
+            <h3>唐 · 炼丹起源</h3>
+            <p>公元808年《太上圣祖金丹秘诀》记载最早配方</p>
+        </div>
+        <div class="era-card" data-era="1">
+            <h3>宋 · 军事应用</h3>
+            <p>1044年《武经总要》记载三种军用火药配方</p>
+        </div>
+        <div class="era-card" data-era="2">
+            <h3>元 · 技术传播</h3>
+            <p>13世纪火药技术经阿拉伯传入欧洲</p>
+        </div>
+    </div>
+
+<script>
+const state = {
+    mixture: { nitrate:0, sulfur:0, charcoal:0 },
+    perfectRatio: { nitrate:75, sulfur:10, charcoal:15 },
+    draggingMaterial: null
+};
+
+function initDragDrop() {
+    // 桌面端初始化（网页1/网页3）
+    document.querySelectorAll('.ingredient').forEach(ingredient => {
+        ingredient.draggable = true;
+        ingredient.addEventListener('dragstart', handleDragStart);
+        ingredient.addEventListener('dragend', handleDragEnd);
+        
+        // 移动端触摸支持（网页6/网页8）
+        ingredient.addEventListener('touchstart', e => {
+            state.draggingMaterial = e.target.dataset.material;
+            createGhostElement(e.target);
+        }, { passive: false });
+    });
+
+    const mixingArea = document.getElementById('mixingArea');
+    
+    // 桌面端事件（网页1）
+    mixingArea.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        mixingArea.classList.add('active');
+    });
+    
+    mixingArea.addEventListener('drop', e => {
+        e.preventDefault();
+        handleMaterialDrop(e.dataTransfer.getData('text/plain'));
+        mixingArea.classList.remove('active');
+    });
+
+    // 移动端事件（网页8）
+    mixingArea.addEventListener('touchmove', e => {
+        if(state.draggingMaterial) {
+            e.preventDefault();
+            updateGhostPosition(e.touches[0]);
+        }
+    }, { passive: false });
+    
+    mixingArea.addEventListener('touchend', e => {
+        if(state.draggingMaterial) {
+            handleMaterialDrop(state.draggingMaterial);
+            mixingArea.classList.remove('active');
+        }
+        state.draggingMaterial = null;
+        removeGhostElement();
+    });
+}
+
+// 桌面端事件处理（网页3）
+function handleDragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.material);
+    createGhostElement(e.target);
+}
+
+function handleDragEnd() {
+    removeGhostElement();
+}
+
+// 通用功能（网页7/网页8）
+let ghostElement = null;
+
+function createGhostElement(target) {
+    ghostElement = target.cloneNode(true);
+    ghostElement.classList.add('drag-ghost');
+    ghostElement.style.cssText = `
+        left: ${target.offsetLeft}px;
+        top: ${target.offsetTop}px;
+    `;
+    document.body.appendChild(ghostElement);
+}
+
+function updateGhostPosition({ clientX, clientY }) {
+    if(ghostElement) {
+        ghostElement.style.transform = `translate(${clientX - 50}px, ${clientY - 50}px)`;
+    }
+}
+
+function removeGhostElement() {
+    ghostElement?.remove();
+    ghostElement = null;
+}
+
+// 统一材料处理（网页5）
+function handleMaterialDrop(material) {
+    if(!material || state.mixture[material] >= 100) return;
+    state.mixture[material] = Math.min(
+        state.mixture[material] + 5,
+        100
+    );
+    
+    updateFormulaDisplay();
+    showParticleEffect(material);
+}
+// 混合区触摸处理
+const mixingArea = document.getElementById('mixingArea');
+    mixingArea.addEventListener('touchmove', e => {
+        if(dragState.active) {
+            e.preventDefault();
+            mixingArea.classList.add('active');
+        }
+    }, { passive: false });
+
+    mixingArea.addEventListener('touchend', e => {
+        if(dragState.active) {
+            handleMaterialDrop(dragState.material);
+            mixingArea.classList.remove('active');
+        }
+        dragState.active = false;
+    });
+        function showParticleEffect(material) {
+            const colors = {
+                nitrate: '#8B0000',
+                sulfur: '#FFA500',
+                charcoal: '#654321'
+            };
+            
+            const area = document.getElementById('mixingArea');
+            for(let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 8px;
+                    height: 8px;
+                    background: ${colors[material]};
+                    border-radius: 50%;
+                    animation: particle 0.6s ease-out;
+                `;
+                
+                // 随机位置
+                const x = Math.random() * 80 + 10;
+                const y = Math.random() * 80 + 10;
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+
+                area.appendChild(particle);
+                setTimeout(() => particle.remove(), 600);
+            }
+        }
+
+        // 更新显示
+        function updateFormulaDisplay() {
+            const display = document.getElementById('formulaDisplay');
+            display.innerHTML = Object.entries(state.mixture).map(([key, value]) => `
+                <div class="formula-item">
+                    <span>${key === 'nitrate' ? '硝石' : key === 'sulfur' ? '硫磺' : '木炭'}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:${value}%"></div>
+                    </div>
+                    ${value}%
+                </div>
+            `).join('');
+        }
+
+        // 点燃测试
+        function ignite() {
+            const total = Object.values(state.mixture).reduce((a,b) => a + b, 0);
+            const result = document.getElementById('experimentResult');
+            
+            if(total !== 100) {
+                result.innerHTML = `<div class="error">❌ 总比例必须为100%（当前 ${total}%）</div>`;
+                playSound('error');
+                return;
+            }
+
+            const accuracy = calculateAccuracy();
+            createExplosion(accuracy);
+            
+            if(accuracy >= 90) {
+                result.innerHTML = `
+                    <div class="success">
+                        <h3>🎉 实验成功！</h3>
+                        <p>爆炸威力：${accuracy}%</p>
+                        <p>💥 最佳配方成就解锁！</p>
+                    </div>
+                `;
+                playSound('explosion');
+            } else {
+                result.innerHTML = `
+                    <div class="warning">
+                        <h3>⚠️ 需要调整配方</h3>
+                        <p>当前威力：${accuracy}%</p>
+                        <p>偏差分析：${getDeviationReport()}</p>
+                    </div>
+                `;
+                playSound('error');
+            }
+        }
+
+        // 辅助函数
+        function calculateAccuracy() {
+            return Math.round(Object.entries(state.mixture).reduce((acc, [key, value]) => 
+                acc + (100 - Math.abs(value - state.perfectRatio[key])), 0) / 3
+            );
+        }
+
+        function getDeviationReport() {
+            return Object.entries(state.mixture).map(([key, value]) => 
+                `${key === 'nitrate' ? '硝石' : key === 'sulfur' ? '硫磺' : '木炭'}：${value - state.perfectRatio[key]}%`
+            ).join('，');
+        }
+
+        function createExplosion(power) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.width = explosion.style.height = `${power * 5}px`;
+            document.getElementById('mixingArea').appendChild(explosion);
+            setTimeout(() => explosion.remove(), 800);
+        }
+
+        function playSound(type) {
+            if(state.sounds[type]) {
+                state.sounds[type].currentTime = 0;
+                state.sounds[type].play();
+            }
+        }
+
+        function resetExperiment() {
+            state.mixture = { nitrate:0, sulfur:0, charcoal:0 };
+            updateFormulaDisplay();
+            document.getElementById('experimentResult').innerHTML = '';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initDragDrop();
+            document.querySelectorAll('.era-card').forEach(card => {
+                card.addEventListener('click', () => showEraDetail(card.dataset.era));
+            });
+        });
+
+        function showEraDetail(era) {
+            const info = [
+                { year:808, detail:"炼丹家发现硝石硫磺混合物的爆燃特性" },
+                { year:1044, detail:"官方军事著作记录三种火药配方" },
+                { year:1280, detail:"欧洲首次火药记载见于罗杰·培根著作" }
+            ];
+            alert(`📜 历史时刻 ${info[era].year}年：\n${info[era].detail}`);
+        }
+    
+</script>
+</body>
+</html>
