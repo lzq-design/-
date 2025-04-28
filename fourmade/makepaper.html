@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>造纸术工艺流程与影响 - 完整展示</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="icon" href="../images/fourmade_zhao.jpg">
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', sans-serif;
+            line-height: 1.6;
+            background-color: #f5f3ef;
+            color: #333;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        #main {
+            width: 1200px;
+            height: 800px;
+            margin: 20px auto;
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        /* 标题样式 */
+        .main-title {
+            text-align: center;
+            font-size: 2.5em;
+            color: #000000;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .main-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #8f4e2c;
+        }
+
+        /* 工艺流程网格布局 */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* 单个步骤样式 */
+        .process-step {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: white;
+        }
+
+        .process-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* 步骤图片容器 */
+        .step-image {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .process-step:hover .step-image img {
+            transform: scale(1.05);
+        }
+
+        /* 步骤信息层 */
+        .step-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            color: white;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover .step-info {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        /* 影响展示区 */
+        .impact-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .impact-card {
+            padding: 25px;
+            border-left: 4px solid #8f4e2c;
+            background: #fff;
+            border-radius: 6px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .impact-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .inventor-section {
+            max-width: 1080px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .inventor-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timeline-item {
+            width: 30%;
+            padding: 20px;
+            background: #f8f5f0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            height: 2px;
+            background: #2c5f2d;
+            left: 0;
+            right: 0;
+            z-index: -1;
+        }
+
+        .inventor-portrait {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 3px solid #8f4e2c;
+            overflow: hidden;
+        }
+
+        .inventor-portrait img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .inventor-quote {
+            font-style: italic;
+            color: #666;
+            border-left: 4px solid #2c5f2d;
+            padding-left: 20px;
+            margin: 20px 0;
+        } 
+        .back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(145deg, #2a5f7a 0%, #1a4b6d 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  font-family: 'Noto Serif SC', serif;
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+  .back-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2em;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../vice/index_04.html" class="back-btn">
+        ← 返回上一页
+      </a>
+    <div class="container">
+        <h1 class="main-title">造纸术工艺流程与历史影响</h1>
+        <section class="inventor-section">
+            <div class="inventor-portrait">
+                <img src="../images_background/b_cailun.jpg" alt="蔡伦画像">
+            </div>
+            <h2 style="text-align: center; color: #6d3636; margin-bottom: 15px;">造纸术改进者 - 蔡伦</h2>
+            <p style="text-align: center; color: #666;">（公元61年－121年）</p>
+            
+            <div class="inventor-timeline">
+                <div class="timeline-item">
+                    <h3>公元75年</h3>
+                    <p>入宫为宦官</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>公元105年</h3>
+                    <p>成功改进造纸术</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>公元121年</h3>
+                    <p>封龙亭侯</p>
+                </div>
+            </div>
+
+            <blockquote class="inventor-quote">
+                "自古书契多编以竹简，其用缣帛者谓之为纸。缣贵而简重，并不便于人。伦乃造意，用树肤、麻头及敝布、鱼网以为纸。"
+                <footer>——《后汉书·蔡伦传》</footer>
+            </blockquote>
+
+            <div class="impact-card">
+                <h3>主要贡献</h3>
+                <p>▸ 确立造纸原料标准化体系</p>
+                <p>▸ 改进"浸沤-蒸煮-舂捣-抄造"四步工艺</p>
+                <p>▸ 使纸张成本降低至缣帛的1/10</p>
+            </div>
+        </section>
+        <!-- 工艺流程 -->
+        <div class="impact-section">
+        <h2 style="color: #000000; margin-bottom: 30px;">造纸术的工艺流程</h2>
+        <div class="process-grid">
+            <!-- 步骤1 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_1.jpg" alt="原料处理">
+                    <div class="step-info">
+                        <div class="step-number">步骤一</div>
+                        <h3>原料处理</h3>
+                        <p>选取树皮、麻料等原料，经过30天清水浸泡软化</p>
+                        <p>使用石灰水蒸煮8小时去除杂质</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤2 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_2.jpg" alt="舂捣成浆">
+                    <div class="step-info">
+                        <div class="step-number">步骤二</div>
+                        <h3>舂捣成浆</h3>
+                        <p>石臼捶打2000次/公斤原料</p>
+                        <p>纤维长度控制在0.8-1.2mm</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤3 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_3.jpg" alt="抄纸成型">
+                    <div class="step-info">
+                        <div class="step-number">步骤三</div>
+                        <h3>抄纸成型</h3>
+                        <p>使用竹帘均匀抄造</p>
+                        <p>湿纸层叠500张后加压脱水</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤4 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_4.jpg" alt="干燥处理">
+                    <div class="step-info">
+                        <div class="step-number">步骤四</div>
+                        <h3>干燥处理</h3>
+                        <p>焙墙烘干温度控制在40-50℃</p>
+                        <p>干燥时间约12-24小时</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤5 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_5.jpg" alt="砑光处理">
+                    <div class="step-info">
+                        <div class="step-number">步骤五</div>
+                        <h3>砑光处理</h3>
+                        <p>使用光滑砑石打磨表面</p>
+                        <p>成品厚度约0.1-0.3mm</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤6 -->
+            <div class="process-step">
+                <div class="step-image">
+                    <img src="../images_background/zhao_6.jpg" alt="成品分切">
+                    <div class="step-info">
+                        <div class="step-number">步骤六</div>
+                        <h3>成品分切</h3>
+                        <p>按需求裁切为不同尺寸</p>
+                        <p>常见规格：2尺×4尺（约60×120cm）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div id="main"></div>
+        <!-- 历史影响 -->
+        <div class="impact-section">
+            <h2 style="color: #2c5f2d; margin-bottom: 30px;">造纸术的历史影响</h2>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <h3>文化传播</h3>
+                    <p>▸ 东汉至唐代：佛经抄录量增长300%</p>
+                    <p>▸ 宋代书院数量从200所增至720所</p>
+                </div>
+
+                <div class="impact-card">
+                    <h3>技术传播</h3>
+                    <p>▸ 公元751年传入阿拉伯地区</p>
+                    <p>▸ 1150年欧洲首个造纸厂在西班牙建立</p>
+                </div>
+
+                <div class="impact-card">
+                    <h3>经济影响</h3>
+                    <p>▸ 明代年产量达20万令（1令=500张）</p>
+                    <p>▸ 清代纸税占财政收入的8%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 新增时间线互动
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const year = this.querySelector('h3').textContent;
+                const events = {
+                    '公元75年': '入宫后任小黄门，开始接触文书工作',
+                    '公元105年': '向汉和帝献纸，改进工艺获推广',
+                    '公元121年': '因功封侯，晚年卷入宫廷斗争'
+                };
+                alert(events[year]);
+            });
+        });
+
+        // 画像悬停效果
+        const portrait = document.querySelector('.inventor-portrait');
+        portrait.addEventListener('mouseenter', () => {
+            portrait.style.transform = 'rotate(5deg)';
+            portrait.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
+        });
+        portrait.addEventListener('mouseleave', () => {
+            portrait.style.transform = 'rotate(0deg)';
+            portrait.style.boxShadow = 'none';
+        });
+        // 动态加载效果
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // 观察所有影响卡片
+        document.querySelectorAll('.impact-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // 点击步骤卡片放大显示（可选功能）
+        document.querySelectorAll('.process-step').forEach(step => {
+            step.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // 图片预加载
+        const imagePaths = [
+            'images/step1.jpg',
+            'images/step2.jpg',
+            'images/step3.jpg',
+            'images/step4.jpg',
+            'images/step5.jpg',
+            'images/step6.jpg'
+        ];
+
+        imagePaths.forEach(path => {
+            new Image().src = path;
+        });
+
+        const nodes = [
+            {name: '中国', region: '亚洲', year: 105},
+            {name: '朝鲜', region: '亚洲', year: 384},
+            {name: '日本', region: '亚洲', year: 610},
+            {name: '越南', region: '亚洲', year: 200},
+            {name: '印度', region: '亚洲', year: 650},
+            {name: '撒马尔罕', region: '中亚', year: 751},
+            {name: '巴格达', region: '西亚', year: 793},
+            {name: '大马士革', region: '西亚', year: 795},
+            {name: '开罗', region: '非洲', year: 900},
+            {name: '摩洛哥', region: '非洲', year: 1100},
+            {name: '西班牙', region: '欧洲', year: 1150},
+            {name: '意大利', region: '欧洲', year: 1276},
+            {name: '法国', region: '欧洲', year: 1348},
+            {name: '德国', region: '欧洲', year: 1390},
+            {name: '英国', region: '欧洲', year: 1494},
+            {name: '墨西哥', region: '美洲', year: 1575},
+            {name: '美国', region: '美洲', year: 1690}
+        ];
+
+        // 完整传播路径数据（增强网页1/2/4/5）
+        const links = [
+            // 东亚传播
+            {source: '中国', target: '朝鲜', value: 105},
+            {source: '朝鲜', target: '日本', value: 610},
+            {source: '中国', target: '越南', value: 200},
+            {source: '中国', target: '印度', value: 650},
+            
+            // 中亚-西亚传播
+            {source: '中国', target: '撒马尔罕', value: 751},
+            {source: '撒马尔罕', target: '巴格达', value: 793},
+            {source: '巴格达', target: '大马士革', value: 795},
+            
+            // 非洲传播
+            {source: '大马士革', target: '开罗', value: 900},
+            {source: '开罗', target: '摩洛哥', value: 1100},
+            
+            // 欧洲传播
+            {source: '摩洛哥', target: '西班牙', value: 1150},
+            {source: '西班牙', target: '法国', value: 1348},
+            {source: '法国', target: '德国', value: 1390},
+            {source: '德国', target: '英国', value: 1494},
+            
+            // 美洲传播
+            {source: '西班牙', target: '墨西哥', value: 1575},
+            {source: '墨西哥', target: '美国', value: 1690}
+        ];
+
+        const option = {
+            title: {
+                text: '造纸术全球传播路径（公元2世纪-17世纪）',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    if(params.dataType === 'node') {
+                        const node = nodes.find(n => n.name === params.name);
+                        return `技术接收方：${params.name}<br>传入时间：公元${node.year}年<br>所属地域：${node.region}`;
+                    }
+                    const sourceYear = nodes.find(n => n.name === params.data.source).year;
+                    const targetYear = nodes.find(n => n.name === params.data.target).year;
+                    return `${params.data.source} → ${params.data.target}<br>
+                            传播时长：${targetYear - sourceYear}年<br>
+                            传播强度：${params.data.value}`;
+                }
+            },
+            series: [{
+                type: 'sankey',
+                layout: 'none',
+                data: nodes,
+                links: links,
+                emphasis: { focus: 'adjacency' },
+                lineStyle: { 
+                    color: 'gradient',
+                    curveness: 0.5
+                },
+                levels: [{
+                    depth: 0,
+                    itemStyle: { color: '#2c5f2d' }, // 起始节点颜色
+                    lineStyle: { color: 'source', opacity: 0.6 }
+                }],
+                nodeWidth: 20,
+                nodeGap: 15
+            }]
+        };
+
+        const myChart = echarts.init(document.getElementById('main'));
+        myChart.setOption(option);
+
+        // 响应式适配
+        window.addEventListener('resize', () => myChart.resize());
+    </script>
+</body>
+</html>
